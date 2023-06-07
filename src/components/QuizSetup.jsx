@@ -122,8 +122,8 @@ const QuizSetup = () => {
     }
   };
 
-  const handleSkipToQuestion = (event) => {
-    const skipQuestionNumber = parseInt(event.target.value);
+  const handleSkipToQuestion = (val) => {
+    const skipQuestionNumber = parseInt(val);
     if (skipQuestionNumber >= 1 && skipQuestionNumber <= questions.length) {
       setCurrentQuestionIndex(skipQuestionNumber - 1);
     }
