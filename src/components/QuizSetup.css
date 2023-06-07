@@ -96,6 +96,8 @@ label {
 @media screen and (max-width: 480px) {
   .quiz-setup-container {
     padding: 10px;
+    width: 100%;
+    min-height: 10vh;
   }
 
   .start-quiz-button,
