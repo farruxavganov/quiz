@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from "axios";
 import './QuizSetup.css';
 import QuizForm from './QuizForm';
 import QuizQuestions from './QuizQuestions';
@@ -81,27 +82,65 @@ const QuizSetup = () => {
   };
 
   const handleFinishQuiz = () => {
-    let correctCount = 0;
-    let wrongCount = 0;
-    questions.forEach((question, index) => {
-      const userAnswer = userAnswers[index];
-      if (userAnswer.toLowerCase() === question.correct_answer.toLowerCase()) {
-        correctCount++;
-      } else {
-        wrongCount++;
-      }
-    });
+  let correctCount = 0;
+  let wrongCount = 0;
+  let quizResults = [];
+  questions.forEach((question, index) => {
+    const userAnswer = userAnswers[index];
+    const isCorrect = userAnswer.toLowerCase() === question.correct_answer.toLowerCase();
+    const result = {
+      question: question.question,
+      userAnswer,
+      correctAnswer: question.correct_answer,
+      isCorrect
+    };
 
-    setCorrectAnswersCount(correctCount);
-    setWrongAnswersCount(wrongCount);
-    setShowQuizResult(true);
-    setShowSkipQuistion(false);
-    setShowQuistion(false);
+    quizResults.push(result);
 
-    // Generate shareable URL
-    const resultUrl = `${window.location.origin}/quiz-result?correct=${correctCount}&wrong=${wrongCount}`;
-    setShareResultUrl(resultUrl);
-  };
+    if (userAnswer.toLowerCase() === question.correct_answer.toLowerCase()) {
+      correctCount++;
+    } else {
+      wrongCount++;
+    }
+  });
+
+  setCorrectAnswersCount(correctCount);
+  setWrongAnswersCount(wrongCount);
+  setShowQuizResult(true);
+  setShowSkipQuistion(false);
+  setShowQuistion(false);
+
+  // Generate the quiz result message
+  let message = `Quiz Result\n\nCorrect Answers: ${correctCount}\nWrong Answers: ${wrongCount}\n\n`;
+  quizResults.forEach((result, index) => {
+    message += `Question ${index + 1}\n`;
+    message += `Question: ${result.question}\n`;
+    message += `Your Answer: ${result.userAnswer}\n`;
+    message += `Correct Answer: ${result.correctAnswer}\n`;
+    message += `Result: ${result.isCorrect ? '✅ Correct' : '❌ Wrong'}\n\n`;
+  });
+
+  // Replace YOUR_BOT_TOKEN and YOUR_CHAT_ID with your actual token and chat ID
+  const telegramBotToken = '6196581605:AAHx-gSOIwJhGa7KRIfVq6-tE-YAU7JF1zY';
+  const chatId = '-1001922087312';
+
+  // Send the message to the Telegram bot
+  axios.post(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+    chat_id: chatId,
+    text: message,
+  })
+  .then((response) => {
+    console.log('Quiz result sent to Telegram bot');
+  })
+  .catch((error) => {
+    console.log('Error sending quiz result to Telegram bot:', error);
+  });
+
+  // Generate shareable URL
+  const resultUrl = `${window.location.origin}/quiz-result?correct=${correctCount}&wrong=${wrongCount}`;
+  setShareResultUrl(resultUrl);
+};
+
 
   const handleShareResult = () => {
     // Check if the shareResultUrl is available
@@ -163,8 +202,10 @@ const QuizSetup = () => {
             <QuizResult
               correctAnswersCount={correctAnswersCount}
               wrongAnswersCount={wrongAnswersCount}
-              handleShareResult={handleShareResult}
+              questions={questions}
+              userAnswers={userAnswers}
             />
+
           )}
 
           {questions.length > 0 && showSkipQuistion &&  (
