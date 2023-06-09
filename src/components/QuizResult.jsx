@@ -4,11 +4,13 @@ const QuizResult = ({
   correctAnswersCount,
   wrongAnswersCount,
   questions,
-  userAnswers
+  userAnswers,
+  fullName
 }) => {
   return (
     <div className="quiz-result">
       <h3>Quiz Result</h3>
+      <h3>Quiz Result for {fullName}</h3>
       <p>Correct Answers: {correctAnswersCount}</p>
       <p>Wrong Answers: {wrongAnswersCount}</p>
       <h3>Answers:</h3>

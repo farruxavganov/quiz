@@ -22,6 +22,7 @@ const QuizSetup = () => {
   const [loading, setLoading] = useState(false);
   const [skipToQuestion, setSkipToQuestion] = useState('');
   const [shareResultUrl, setShareResultUrl] = useState('');
+  const [fullName, setFullName] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -46,6 +47,10 @@ const QuizSetup = () => {
       const updatedCategories = selectedCategories.filter((id) => id !== categoryId);
       setSelectedCategories(updatedCategories);
     }
+  };
+
+  const handleFullNameChange = (event) => {
+    setFullName(event.target.value);
   };
 
   const startQuiz = () => {
@@ -111,7 +116,7 @@ const QuizSetup = () => {
   setShowQuistion(false);
 
   // Generate the quiz result message
-  let message = `Quiz Result\n\nCorrect Answers: ${correctCount}\nWrong Answers: ${wrongCount}\n\n`;
+  let message = `Quiz Result\n${fullName}\n\nCorrect Answers: ${correctCount}\nWrong Answers: ${wrongCount}\n\n`;
   quizResults.forEach((result, index) => {
     message += `Question ${index + 1}\n`;
     message += `Question: ${result.question}\n`;
@@ -175,6 +180,16 @@ const QuizSetup = () => {
           {setupQuiz && (
             <>
             <h2>Quiz Setup</h2>
+            <div className="quiz-input">
+              <label htmlFor="fullName">Full Name:</label>
+              <input
+                type="text"
+                id="fullName"
+                value={fullName}
+                placeholder="Enter Full Name"
+                onChange={handleFullNameChange}
+              />
+            </div>
             <QuizForm
               numberOfQuestions={numberOfQuestions}
               handleNumberOfQuestionsChange={handleNumberOfQuestionsChange}
@@ -204,6 +219,7 @@ const QuizSetup = () => {
               wrongAnswersCount={wrongAnswersCount}
               questions={questions}
               userAnswers={userAnswers}
+              fullName={fullName}
             />
 
           )}
